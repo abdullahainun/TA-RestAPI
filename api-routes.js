@@ -11,7 +11,7 @@ router.get('/', function (req, res) {
 
 // Import contact controller
 // var contactController = require('./contactController');
-var contactController = require('./dnslogController');
+var dnslogController = require('./dnslogController');
 
 // Contact routes
 // router.route('/contacts')
@@ -24,10 +24,10 @@ var contactController = require('./dnslogController');
 //     .put(contactController.update)
 //     .delete(contactController.delete);
 
-router.route('/dnslogController')
+router.route('/dnslog')
     .get(dnslogController.index);
 
-router.route('/contacts/:contact_id')
+router.route('/dnslog/:uid')
     .get(dnslogController.view)
     .delete(dnslogController.delete);
 
