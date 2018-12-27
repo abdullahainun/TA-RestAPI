@@ -21,7 +21,7 @@ exports.index = function (req, res) {
 // Handle view contact info
 exports.view = function (req, res) {
     // find each dnslog with a uid, selecting the `name` and `occupation` fields
-    Person.findOne({
+    Dnslog.findOne({
         'uid': req.params.uid
     }, function (err, dnslog) {
         if (err)
