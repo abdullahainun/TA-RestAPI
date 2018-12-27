@@ -22,7 +22,7 @@ mongoose.connect('mongodb://localhost/spark');
 
 var db = mongoose.connection;
 // Setup server port
-var port = process.env.PORT || 9999;
+var port = process.env.PORT || 6789;
 
 
 // Send message for default URL
