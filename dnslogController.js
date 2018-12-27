@@ -20,7 +20,10 @@ exports.index = function (req, res) {
 
 // Handle view contact info
 exports.view = function (req, res) {
-    Dnslog.findById(req.params.uid, function (err, dnslog) {
+    // find each dnslog with a uid, selecting the `name` and `occupation` fields
+    Person.findOne({
+        'uid': req.params.uid
+    }, function (err, dnslog) {
         if (err)
             res.send(err);
         res.json({
@@ -33,7 +36,7 @@ exports.view = function (req, res) {
 // Handle delete contact
 exports.delete = function (req, res) {
     Dnslog.remove({
-        _id: req.params.uid
+        uid: req.params.uid
     }, function (err, contact) {
         if (err)
             res.send(err);

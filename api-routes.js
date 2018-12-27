@@ -24,7 +24,7 @@ var dnslogController = require('./dnslogController');
 //     .put(contactController.update)
 //     .delete(contactController.delete);
 
-router.route('/dnslog')
+router.route('/dnslogs')
     .get(dnslogController.index);
 
 router.route('/dnslog/:uid')
