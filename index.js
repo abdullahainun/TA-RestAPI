@@ -4,6 +4,7 @@ let express = require('express');
 let bodyParser = require('body-parser');
 // Import Mongoose
 let mongoose = require('mongoose');
+let cors = require('cors')
 // Initialize the app
 let app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+app.use(cors())
 
 // Connect to Mongoose and set connection variable
 mongoose.connect('mongodb://localhost/spark');

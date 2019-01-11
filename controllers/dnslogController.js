@@ -1,5 +1,5 @@
 // Import contact model
-Dnslog = require('./dnslogModel');
+Dnslog = require('../models/dnslogModel');
 
 // Handle index actions
 exports.index = function (req, res) {
@@ -15,8 +15,9 @@ exports.index = function (req, res) {
             message: "DNS logs retrieved successfully",
             data: dnslogs
         });
-    });
+    }, 100);
 };
+// 
 
 // Handle view contact info
 exports.view = function (req, res) {

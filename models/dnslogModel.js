@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 // Setup schema
-var contactSchema = mongoose.Schema({
+var dnslogSchema = mongoose.Schema({
     ts: {
         type: String,
         required: true
@@ -43,7 +43,7 @@ var contactSchema = mongoose.Schema({
 });
 
 // Export Contact model
-var Contact = module.exports = mongoose.model('dnslog', contactSchema);
+var Contact = module.exports = mongoose.model('dnslogs', dnslogSchema);
 
 
 module.exports.get = function (callback, limit) {
