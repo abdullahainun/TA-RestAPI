@@ -4,14 +4,15 @@ let router = require('express').Router();
 // Set default API response
 router.get('/', function (req, res) {
     res.json({
-        status: 'API Its Working',
-        message: 'Welcome to Bro log Monitor, it make with loce !',
+        status: 'API its Working',
+        message: 'Welcome To Bro API!',
     });
 });
 
 // Import contact controller
 // var contactController = require('./contactController');
 var dnslogController = require('./dnslogController');
+var connlogController = require('./connlogController');
 
 // Contact routes
 // router.route('/contacts')
@@ -31,6 +32,14 @@ router.route('/dnslog/:uid')
     .get(dnslogController.view)
     .delete(dnslogController.delete);
 
+// connection log
+router.route('/connlogs')
+    .get(connlogController.index)
+    .post(connlogController.new);
+
+router.route('/connlog/:uid')
+    .get(connlogController.view)
+    .delete(connlogController.delete);
 
 // Export API routes
 module.exports = router;
