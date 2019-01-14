@@ -20,7 +20,9 @@ app.use(bodyParser.json());
 app.use(cors())
 
 // Connect to Mongoose and set connection variable
-mongoose.connect('mongodb://localhost/spark');
+mongoose.connect('mongodb://localhost/spark', {
+    useNewUrlParser: true
+});
 
 var db = mongoose.connection;
 // Setup server port
@@ -37,7 +39,7 @@ app.use('/api', apiRoutes)
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();   
+    next();
 });
 
 // Launch app to listen to specified port

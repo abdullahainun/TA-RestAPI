@@ -18,6 +18,110 @@ exports.index = function (req, res) {
     }, 100);
 };
 // 
+/*start top query*/
+exports.getQuery = function (req, res) {
+    Dnslog.aggregate([{
+            "$group": {
+                _id: "$query",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            res.json({
+                status: "error",
+                message: err,
+            });
+        }
+        res.json({
+            status: "success",
+            message: "normal count of Conn logs retrieved successfully",
+            data: result
+        });
+    });
+};
+
+/*end top query*/
+
+/*start top rcode*/
+exports.getRcode = function (req, res) {
+    Dnslog.aggregate([{
+            "$group": {
+                _id: "$rcode_name",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            res.json({
+                status: "error",
+                message: err,
+            });
+        }
+        res.json({
+            status: "success",
+            message: "normal count of Conn logs retrieved successfully",
+            data: result
+        });
+    });
+};
+
+/*end top rcode*/
+
+/*start top qclass*/
+exports.getQclass = function (req, res) {
+    Dnslog.aggregate([{
+            "$group": {
+                _id: "$qclass_name",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            res.json({
+                status: "error",
+                message: err,
+            });
+        }
+        res.json({
+            status: "success",
+            message: "normal count of Conn logs retrieved successfully",
+            data: result
+        });
+    });
+};
+
+/*end top qclass*/
 
 // Handle view contact info
 exports.view = function (req, res) {

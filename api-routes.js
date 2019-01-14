@@ -32,11 +32,11 @@ router.route('/dnslogs')
 router.route('/dnslog/:uid')
     .get(dnslogController.view)
     .delete(dnslogController.delete);
-router.route('/dnslogs/query')
+router.route('/dnslogs/queries')
     .get(dnslogController.getQuery);
-router.route('/dnslogs/rcode')
+router.route('/dnslogs/rcodes')
     .get(dnslogController.getRcode);
-router.route('/dnslogs/qclass')
+router.route('/dnslogs/qclases')
     .get(dnslogController.getQclass);
 // connection log
 router.route('/connlogs')
