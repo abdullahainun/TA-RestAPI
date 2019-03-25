@@ -20,13 +20,11 @@ app.use(bodyParser.json());
 app.use(cors())
 
 // Connect to Mongoose and set connection variable
-mongoose.connect('mongodb://localhost/spark', {
-    useNewUrlParser: true
-});
+mongoose.connect('mongodb://admin:jarkoM@abdullahainun.me:27017/aal?replicaSet=rs0&authSource=admin', { useNewUrlParser: true });
 
 var db = mongoose.connection;
 // Setup server port
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 9090;
 
 
 // Send message for default URL

@@ -14,6 +14,7 @@ router.get('/', function (req, res) {
 var dnslogController = require('./controllers/dnslogController');
 var connlogController = require('./controllers/connlogController');
 var intellogController = require('./controllers/intellogController');
+var classificationController = require('./controllers/classificationController');
 
 // Contact routes
 // router.route('/contacts')
@@ -71,6 +72,14 @@ router.route('/intellogs')
 router.route('/intellog/:uid')
     .get(intellogController.view)
     .delete(intellogController.delete);
+
+// classification 
+router.route('/classifications')
+    .get(classificationController.index)
+    .post(classificationController.new);
+router.route('/classification/:uid')
+    .get(classificationController.view)
+    .delete(classificationController.delete);
 
 // Export API routes
 module.exports = router;
