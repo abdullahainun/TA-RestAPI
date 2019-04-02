@@ -31,8 +31,11 @@ var classificationController = require('./controllers/classificationController')
 router.route('/dnslogs')
     .get(dnslogController.index);
 router.route('/dnslog/:uid')
-    .get(dnslogController.view)
+    .get(dnslogController.byuid)
     .delete(dnslogController.delete);
+router.route('/dnslog/:start/:end')
+    .get(dnslogController.bydaterange)
+
 router.route('/dnslogs/queries')
     .get(dnslogController.getQuery);
 router.route('/dnslogs/rcodes')

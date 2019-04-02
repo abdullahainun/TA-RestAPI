@@ -12,7 +12,7 @@ exports.index = function (req, res) {
         }
         res.json({
             status: "success",
-            message: "DNS logs retrieved successfully",
+            message: "Semua data DNS logs  berhasil di dapatkan",
             data: dnslogs
         });
     }, 100);
@@ -45,7 +45,7 @@ exports.getQuery = function (req, res) {
         }
         res.json({
             status: "success",
-            message: "normal count of Conn logs retrieved successfully",
+            message: "Top Query retrieved successfully",
             data: result
         });
     });
@@ -123,8 +123,8 @@ exports.getQclass = function (req, res) {
 
 /*end top qclass*/
 
-// Handle view contact info
-exports.view = function (req, res) {
+// Handle view dns log by uid
+exports.byuid = function (req, res) {
     // find each dnslog with a uid, selecting the `name` and `occupation` fields
     Dnslog.findOne({
         'uid': req.params.uid
@@ -138,6 +138,22 @@ exports.view = function (req, res) {
     });
 };
 
+
+// Handle view dns log by date range
+exports.bydaterange = function (req, res) {
+    // find each dnslog with a uid, selecting the `name` and `occupation` fields
+    Dnslog.findOne({
+        'start': req.params.start,
+        'end': req.params.end
+    }, function (err, dnslog) {
+        if (err)
+            res.send(err);
+        res.json({
+            message: 'dnslog details loading..',
+            data: dnslog
+        });
+    });
+};
 // Handle delete contact
 exports.delete = function (req, res) {
     Dnslog.remove({

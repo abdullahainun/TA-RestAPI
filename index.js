@@ -20,7 +20,10 @@ app.use(bodyParser.json());
 app.use(cors())
 
 // Connect to Mongoose and set connection variable
-mongoose.connect('mongodb://admin:jarkoM@abdullahainun.me:27017/aal?replicaSet=rs0&authSource=admin', { useNewUrlParser: true });
+// mongoose.connect('mongodb://admin:jarkoM@abdullahainun.me:27017/aal?replicaSet=rs0&authSource=admin', { useNewUrlParser: true });
+mongoose.connect('mongodb://admin:jarkoM@10.8.0.2:27017/aal?replicaSet=rs0&authSource=admin', {
+    useNewUrlParser: true
+});
 
 var db = mongoose.connection;
 // Setup server port
