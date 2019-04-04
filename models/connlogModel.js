@@ -129,10 +129,8 @@ var connlogSchema = mongoose.Schema({
 });
 
 // Export Contact model
-var Connlog = (module.exports = mongoose.model("connlog", connlogSchema));
+var Connlog = (module.exports = mongoose.model("conns", connlogSchema));
 
 module.exports.get = function (callback, limit) {
     Connlog.find(callback).limit(limit);
 };
-
-
