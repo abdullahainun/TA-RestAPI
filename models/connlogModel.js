@@ -3,7 +3,7 @@ var mongoose = require("mongoose");
 // Setup schema
 var connlogSchema = mongoose.Schema({
     ts: {
-        type: String,
+        type: Date,
         required: true
     },
     uid: {

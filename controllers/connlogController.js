@@ -1,81 +1,67 @@
 // Import contact model
+var moment = require('moment');
 Connlog = require('../models/connlogModel');
 
 /*start query traffic*/
 // Handle index actions
 exports.index = function (req, res) {
-    Connlog.get(function (err, connlogs) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
+    // Find some documents
+    Connlog.find({
+        ts: {
+            '$gte': startDate,
+            '$lte': endDate
         }
-        res.json({
-            status: "success",
-            message: "Conn logs retrieved successfully",
-            data: connlogs
-        });
-    }, 20);
+    }, function (err, data) {
+        // Mongo command to fetch all data from collection.
+        if (err) {
+            response = {
+                error: true,
+                message: "Error fetching data"
+            };
+        } else {
+            response = {
+                error: false,
+                message: 'Conn Logs periode ' + startDate + ' until ' + endDate,
+                data: data
+            };
+        }
+        res.json(response);
+    });
 };
 
 // get all count of connlog
 exports.getAllCount = function (req, res) {
-    Connlog.count({}, function (err, c) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
+    Connlog.count({
+        ts: {
+            '$gte': startDate,
+            '$lte': endDate
+        }
+    }, function (err, c) {
         if (err) {
             res.json({
-                status: "error",
+                error: true,
                 message: err,
             });
         }
         res.json({
-            status: "success",
-            message: "Conn logs retrieved successfully",
+            erro: false,
+            message: "top originator of dns logs logs from " + startDate + " until " + endDate + " retrieved successfully",
             data: c
         });
     });
 };
 
-// get all malicious count of connlog
-exports.getMaliciousCount = function (req, res) {
-    Connlog.count({
-        label: 'malicious'
-    }, function (err, c) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            message: "malicious count of Conn logs retrieved successfully",
-            data: c
-        });
-    });
-};
-
-// get all normal count of connlog
-exports.getNormalCount = function (req, res) {
-    Connlog.count({
-        label: 'normal'
-    }, function (err, c) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
-            data: c
-        });
-    });
-};
-/*end query traffic*/
 /*start protokol*/
 exports.getProtokol = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     Connlog.aggregate([{
             "$group": {
                 _id: "$proto",
@@ -95,13 +81,13 @@ exports.getProtokol = function (req, res) {
     ], function (err, result) {
         if (err) {
             res.json({
-                status: "error",
+                error: true,
                 message: err,
             });
         }
         res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
+            error: false,
+            message: "top protokol of Conn logs from " + startDate + " until " + endDate + "retrieved successfully",
             data: result
         });
     });
@@ -110,6 +96,9 @@ exports.getProtokol = function (req, res) {
 /*end protokol*/
 /*start top originator*/
 exports.getTopOrigin = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     Connlog.aggregate([{
             "$group": {
                 _id: "$id_orig_h",
@@ -129,13 +118,13 @@ exports.getTopOrigin = function (req, res) {
     ], function (err, result) {
         if (err) {
             res.json({
-                status: "error",
+                error: true,
                 message: err,
             });
         }
         res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
+            error: false,
+            message: "top origin of Conn logs retrieved successfully",
             data: result
         });
     });
@@ -145,6 +134,9 @@ exports.getTopOrigin = function (req, res) {
 
 /*start top resp*/
 exports.getTopResp = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     Connlog.aggregate([{
             "$group": {
                 _id: "$id_resp_h",
@@ -170,7 +162,7 @@ exports.getTopResp = function (req, res) {
         }
         res.json({
             status: "success",
-            message: "normal count of Conn logs retrieved successfully",
+            message: "top responder of Conn logs retrieved successfully",
             data: result
         });
     });
@@ -178,89 +170,28 @@ exports.getTopResp = function (req, res) {
 
 /*end top resp*/
 
-/*start top resp*/
-exports.getTopLabel = function (req, res) {
-    Connlog.aggregate([{
-            "$group": {
-                _id: "$label",
-                value: {
-                    $sum: 1
-                }
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                value: "$value",
-                name: "$_id",
-                sum: 1
-            }
-        }
-    ], function (err, result) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
-            data: result
-        });
-    });
-};
+// count data
+exports.gettotal = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
-/*end top resp*/
-
-// Handle create contact actions
-exports.new = function (req, res) {
-    var connlog = new Connlog();
-    connlog.ts = req.body.ts ? req.body.ts : connlog.ts;
-    connlog.uid = req.body.uid;
-    connlog.id_orig_h = req.body.id_orig_h;
-    connlog.id_orig_p = req.body.id_orig_p;
-    connlog.id_resp_h = req.body.id_resp_h;
-    connlog.id_resp_p = req.body.id_resp_p;
-    connlog.proto = req.body.proto;
-    connlog.service = req.body.service;
-    connlog.duration = req.body.duration;
-    connlog.orig_bytes = req.body.orig_bytes;
-    connlog.resp_bytes = req.body.resp_bytes;
-    connlog.conn_state = req.body.conn_state;
-    connlog.local_orig = req.body.local_orig;
-    connlog.local_resp = req.body.local_resp;
-    connlog.missed_bytes = req.body.missed_bytes;
-    connlog.history = req.body.history;
-    connlog.orig_pkts = req.body.orig_pkts;
-    connlog.orig_ip_bytes = req.body.orig_ip_bytes;
-    connlog.resp_pkts = req.body.resp_pkts;
-    connlog.resp_ip_bytes = req.body.resp_ip_bytes;
-    connlog.PX = req.body.PX;
-    connlog.NNP = req.body.NNP;
-    connlog.NSP = req.body.NSP;
-    connlog.PSP = req.body.PSP;
-    connlog.IOPR = req.body.IOPR;
-    connlog.Reconnect = req.body.Reconnect;
-    connlog.FPS = req.body.FPS;
-    connlog.TBT = req.body.TBT;
-    connlog.APL = req.body.APL;
-    connlog.PPS = req.body.PPS;
-    connlog.label = req.body.label;
-
-    // save the contact and check for errors
-    connlog.save(function (err) {
+    Connlog.count({}, function (err, count) {
         if (err)
-            res.json(err);
+            res.send(err);
 
         res.json({
-            message: 'New connlog created!',
-            data: connlog
+            error: false,
+            message: 'Total baris data',
+            data: count
         });
-    });
-};
+    })
+}
 
-// Handle view contact info
+
+/** 
+ * Additional
+ * **/
+// Handle view Classification info
 exports.view = function (req, res) {
     // find each dnslog with a uid, selecting the `name` and `occupation` fields
     Connlog.findOne({
@@ -275,7 +206,7 @@ exports.view = function (req, res) {
     });
 };
 
-// Handle delete contact
+// Handle delete Connection log data
 exports.delete = function (req, res) {
     Connlog.remove({
         uid: req.params.uid
@@ -284,8 +215,56 @@ exports.delete = function (req, res) {
             res.send(err);
 
         res.json({
-            status: "success",
+            error: false,
             message: 'connlog deleted'
         });
     });
 };
+
+
+// Handle create contact actions
+// exports.new = function (req, res) {
+//     var connlog = new Connlog();
+//     connlog.ts = req.body.ts ? req.body.ts : connlog.ts;
+//     connlog.uid = req.body.uid;
+//     connlog.id_orig_h = req.body.id_orig_h;
+//     connlog.id_orig_p = req.body.id_orig_p;
+//     connlog.id_resp_h = req.body.id_resp_h;
+//     connlog.id_resp_p = req.body.id_resp_p;
+//     connlog.proto = req.body.proto;
+//     connlog.service = req.body.service;
+//     connlog.duration = req.body.duration;
+//     connlog.orig_bytes = req.body.orig_bytes;
+//     connlog.resp_bytes = req.body.resp_bytes;
+//     connlog.conn_state = req.body.conn_state;
+//     connlog.local_orig = req.body.local_orig;
+//     connlog.local_resp = req.body.local_resp;
+//     connlog.missed_bytes = req.body.missed_bytes;
+//     connlog.history = req.body.history;
+//     connlog.orig_pkts = req.body.orig_pkts;
+//     connlog.orig_ip_bytes = req.body.orig_ip_bytes;
+//     connlog.resp_pkts = req.body.resp_pkts;
+//     connlog.resp_ip_bytes = req.body.resp_ip_bytes;
+//     connlog.PX = req.body.PX;
+//     connlog.NNP = req.body.NNP;
+//     connlog.NSP = req.body.NSP;
+//     connlog.PSP = req.body.PSP;
+//     connlog.IOPR = req.body.IOPR;
+//     connlog.Reconnect = req.body.Reconnect;
+//     connlog.FPS = req.body.FPS;
+//     connlog.TBT = req.body.TBT;
+//     connlog.APL = req.body.APL;
+//     connlog.PPS = req.body.PPS;
+//     connlog.label = req.body.label;
+
+//     // save the contact and check for errors
+//     connlog.save(function (err) {
+//         if (err)
+//             res.json(err);
+
+//         res.json({
+//             message: 'New connlog created!',
+//             data: connlog
+//         });
+//     });
+// };

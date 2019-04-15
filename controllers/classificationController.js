@@ -1,47 +1,72 @@
 // Import contact model
 Classification = require('../models/classificationModel');
 
-// Handle index actions
+// Handle delete Classification
 exports.index = function (req, res) {
-    Classification.get(function (err, classification) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
+    if (err) {
         res.json({
-            status: "success",
-            message: "Classification logs retrieved successfully",
-            data: classification
+            error: true,
+            message: err
         });
-    }, 100);
-};
-//
-
-// Handle create contact actions
-exports.new = function (req, res) {
-    var classification = new Classification();
-
-    classification.uid = req.body.uid ? req.body.uid : classification.uid;
-    classification.orig_h = req.body.orig_h ? req.body.orig_h : classification.orig_h;
-    classification.orig_p = req.body.orig_p ? req.body.orig_p : classification.orig_p;
-    classification.resp_h = req.body.resp_h ? req.body.resp_h : classification.resp_h;
-    classification.resp_p = req.body.resp_p;
-    classification.label = req.body.label;
-
-    // save the contact and check for errors
-    classification.save(function (err) {
-        if (err)
-            res.json(err);
-
-        res.json({
-            message: 'New classification created!',
-            data: classification
-        });
+    }
+    res.json({
+        error: false,
+        message: "Classification home list",
     });
-}; 
+};
 
+
+
+// Handle index classification
+// exports.index = function (req, res) {
+//     var pageNo = parseInt(req.query.pageNo)
+//     var size = parseInt(req.query.size)
+//     var query = {}
+//     if (pageNo < 0 || pageNo === 0) {
+//         response = {
+//             error: true,
+//             message: "invalid page number, should start with 1"
+//         };
+//         return res.json(response)
+//     }
+//     query.skip = size * (pageNo - 1)
+//     query.limit = size
+//     // Find some documents
+//     Classification.aggregate(
+//         [{
+//             $project: {
+//                 label: {
+//                     $cond: {
+//                         if: {
+//                             $gte: ["$label", "0.0"]
+//                         },
+//                         then: "normal",
+//                         else: "malicious"
+//                     }
+//                 }
+//             }
+//         }, {
+//             $limit: 10
+//         }],
+//         function (err, data) {
+//             // Mongo command to fetch all data from collection.
+//             if (err) {
+//                 response = {
+//                     error: true,
+//                     message: "Error fetching data"
+//                 };
+//             } else {
+//                 response = {
+//                     error: false,
+//                     message: "Classification logs retrieved successfully page " + req.query.pageNo,
+//                     data: data
+//                 };
+//             }
+//             res.json(response);
+//         });
+
+// };
+//
 /*start top query*/
 exports.getQuery = function (req, res) {
     Classification.aggregate([{
@@ -63,13 +88,13 @@ exports.getQuery = function (req, res) {
     ], function (err, result) {
         if (err) {
             res.json({
-                status: "error",
+                error: true,
                 message: err,
             });
         }
         res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
+            error: false,
+            message: "normal query count retrieved successfully",
             data: result
         });
     });
@@ -77,77 +102,7 @@ exports.getQuery = function (req, res) {
 
 /*end top query*/
 
-/*start top rcode*/
-exports.getRcode = function (req, res) {
-    Classification.aggregate([{
-            "$group": {
-                _id: "$rcode_name",
-                value: {
-                    $sum: 1
-                }
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                value: "$value",
-                name: "$_id",
-                sum: 1
-            }
-        }
-    ], function (err, result) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
-            data: result
-        });
-    });
-};
-
-/*end top rcode*/
-
-/*start top qclass*/
-exports.getQclass = function (req, res) {
-    Classification.aggregate([{
-            "$group": {
-                _id: "$qclass_name",
-                value: {
-                    $sum: 1
-                }
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                value: "$value",
-                name: "$_id",
-                sum: 1
-            }
-        }
-    ], function (err, result) {
-        if (err) {
-            res.json({
-                status: "error",
-                message: err,
-            });
-        }
-        res.json({
-            status: "success",
-            message: "normal count of Conn logs retrieved successfully",
-            data: result
-        });
-    });
-};
-
-/*end top qclass*/
-
-// Handle view contact info
+// Handle view Classification info
 exports.view = function (req, res) {
     // find each dnslog with a uid, selecting the `name` and `occupation` fields
     Classification.findOne({
@@ -156,13 +111,14 @@ exports.view = function (req, res) {
         if (err)
             res.send(err);
         res.json({
+            error: false,
             message: 'dnslog details loading..',
             data: dnslog
         });
     });
 };
 
-// Handle delete contact
+// Handle delete Classification
 exports.delete = function (req, res) {
     Classification.remove({
         uid: req.params.uid
@@ -171,8 +127,47 @@ exports.delete = function (req, res) {
             res.send(err);
 
         res.json({
-            status: "success",
-            message: 'Contact deleted'
+            error: false,
+            message: 'Classification deleted'
         });
     });
 };
+
+// get all malicious count of connlog
+exports.getMaliciousCount = function (req, res) {
+    Classification.count({
+        label: '1.0'
+    }, function (err, c) {
+        if (err) {
+            res.json({
+                error: true,
+                message: err
+            });
+        }
+        res.json({
+            error: false,
+            message: "malicious traffic count retrieved successfully",
+            data: c
+        });
+    });
+};
+
+// get all normal count of connlog
+exports.getNormalCount = function (req, res) {
+    Classification.count({
+        label: '0.0'
+    }, function (err, c) {
+        if (err) {
+            res.json({
+                error: true,
+                message: err
+            });
+        }
+        res.json({
+            error: false,
+            message: "normal traffic count retrieved successfully",
+            data: c
+        });
+    });
+};
+/*end query traffic*/
