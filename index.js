@@ -31,7 +31,7 @@ var port = process.env.PORT || 9090;
 
 
 // Send message for default URL
-app.get('/', (req, res) => res.send('Hello World, ini bekerja'));
+app.get('/', (req, res) => res.send('Hello, Apa kabar. RestPI ini sudah bekerja loo'));
 
 // Use Api routes in the App
 app.use('/api', apiRoutes)
