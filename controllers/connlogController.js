@@ -156,12 +156,12 @@ exports.getTopResp = function (req, res) {
     ], function (err, result) {
         if (err) {
             res.json({
-                status: "error",
+                error: true,
                 message: err,
             });
         }
         res.json({
-            status: "success",
+            error: false,
             message: "top responder of Conn logs retrieved successfully",
             data: result
         });

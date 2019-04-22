@@ -43,19 +43,12 @@ exports.getTopOrigin = function (req, res) {
     Connlog.aggregate([{
             "$group": {
                 _id: "$id_orig_h",
-                value: {
+                count: {
                     $sum: 1
                 }
-            },
-        },
-        {
-            $project: {
-                _id: 0,
-                value: "$value",
-                name: "$_id",
-                sum: 1
             }
         }
+
     ], function (err, result) {
         if (err) {
             res.json({
