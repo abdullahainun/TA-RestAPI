@@ -56,14 +56,14 @@ router.route('/connlog/:uid')
 /** classification  **/
 router.route('/classifications')
     .get(classificationController.index);
-// router.route('/classifications/:start/:end')
-//     .get(classificationController.bydaterange);
+router.route('/classification/:start/:end')
+    .get(classificationController.bydaterange);
 router.route('/classification/:uid')
     .get(classificationController.view)
     .delete(classificationController.delete);
-router.route('/classifications/getmaliciouscount')
+router.route('/classification/getmaliciouscount')
     .get(classificationController.getMaliciousCount);
-router.route('/classifications/getnormalcount')
+router.route('/classification/getnormalcount')
     .get(classificationController.getNormalCount);
 
 // Export API routes

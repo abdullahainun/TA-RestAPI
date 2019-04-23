@@ -3,69 +3,61 @@ Classification = require('../models/classificationModel');
 
 // Handle delete Classification
 exports.index = function (req, res) {
-    if (err) {
-        res.json({
-            error: true,
-            message: err
-        });
-    }
     res.json({
         error: false,
         message: "Classification home list",
     });
 };
 
-
-
 // Handle index classification
-// exports.index = function (req, res) {
-//     var pageNo = parseInt(req.query.pageNo)
-//     var size = parseInt(req.query.size)
-//     var query = {}
-//     if (pageNo < 0 || pageNo === 0) {
-//         response = {
-//             error: true,
-//             message: "invalid page number, should start with 1"
-//         };
-//         return res.json(response)
-//     }
-//     query.skip = size * (pageNo - 1)
-//     query.limit = size
-//     // Find some documents
-//     Classification.aggregate(
-//         [{
-//             $project: {
-//                 label: {
-//                     $cond: {
-//                         if: {
-//                             $gte: ["$label", "0.0"]
-//                         },
-//                         then: "normal",
-//                         else: "malicious"
-//                     }
-//                 }
-//             }
-//         }, {
-//             $limit: 10
-//         }],
-//         function (err, data) {
-//             // Mongo command to fetch all data from collection.
-//             if (err) {
-//                 response = {
-//                     error: true,
-//                     message: "Error fetching data"
-//                 };
-//             } else {
-//                 response = {
-//                     error: false,
-//                     message: "Classification logs retrieved successfully page " + req.query.pageNo,
-//                     data: data
-//                 };
-//             }
-//             res.json(response);
-//         });
+exports.bydaterange = function (req, res) {
+    var pageNo = parseInt(req.query.pageNo)
+    var size = parseInt(req.query.size)
+    var query = {}
+    if (pageNo < 0 || pageNo === 0) {
+        response = {
+            error: true,
+            message: "invalid page number, should start with 1"
+        };
+        return res.json(response)
+    }
+    query.skip = size * (pageNo - 1)
+    query.limit = size
+    // Find some documents
+    Classification.aggregate(
+        [{
+            $project: {
+                label: {
+                    $cond: {
+                        if: {
+                            $gte: ["$label", "0.0"]
+                        },
+                        then: "normal",
+                        else: "malicious"
+                    }
+                }
+            }
+        }, {
+            $limit: 10
+        }],
+        function (err, data) {
+            // Mongo command to fetch all data from collection.
+            if (err) {
+                response = {
+                    error: true,
+                    message: "Error fetching data"
+                };
+            } else {
+                response = {
+                    error: false,
+                    message: "Classification logs retrieved successfully page " + req.query.pageNo,
+                    data: data
+                };
+            }
+            res.json(response);
+        });
 
-// };
+};
 //
 /*start top query*/
 exports.getQuery = function (req, res) {
