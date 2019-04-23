@@ -31,7 +31,7 @@ var port = process.env.PORT || 9090;
 
 
 // Send message for default URL
-app.get('/', (req, res) => res.send('Hello, Apa kabar.'));
+app.get('/', (req, res) => res.send('hello work'));
 
 // Use Api routes in the App
 app.use('/api', apiRoutes)
