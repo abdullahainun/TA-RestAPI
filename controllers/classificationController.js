@@ -30,7 +30,7 @@ exports.bydaterange = function (req, res) {
                 _id: 0,
                 uid: "$uid",
                 orig_h: "$orig_h",
-                orig_p: "orig_p",
+                orig_p: "$orig_p",
                 resp_h: "$resp_h",
                 resp_p: "$resp_p",
                 label: {
