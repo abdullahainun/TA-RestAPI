@@ -27,6 +27,12 @@ exports.bydaterange = function (req, res) {
     Classification.aggregate(
         [{
             $project: {
+                _id: 0,
+                uid: "$uid",
+                orig_h: "$orig_h",
+                orig_p: "orig_p",
+                resp_h: "$resp_h",
+                resp_p: "$resp_p",
                 label: {
                     $cond: {
                         if: {
@@ -35,7 +41,9 @@ exports.bydaterange = function (req, res) {
                         then: "normal",
                         else: "malicious"
                     }
-                }
+                },
+
+
             }
         }, {
             $limit: 10
@@ -127,39 +135,47 @@ exports.delete = function (req, res) {
 
 // get all malicious count of connlog
 exports.getMaliciousCount = function (req, res) {
-    Classification.count({
+    var q = Classification.find({
         label: '1.0'
-    }, function (err, c) {
+    }).count();
+
+    q.exec(function (err, data) {
+        // `posts` will be of length 20
         if (err) {
             res.json({
                 error: true,
                 message: err
             });
         }
+
         res.json({
             error: false,
-            message: "malicious traffic count retrieved successfully",
-            data: c
-        });
-    });
+            message: 'count of malicious traffic..',
+            data: data
+        })
+    })
 };
 
 // get all normal count of connlog
 exports.getNormalCount = function (req, res) {
-    Classification.count({
+    var q = Classification.find({
         label: '0.0'
-    }, function (err, c) {
+    }).count();
+
+    q.exec(function (err, data) {
+        // `posts` will be of length 20
         if (err) {
             res.json({
                 error: true,
                 message: err
             });
         }
+
         res.json({
             error: false,
-            message: "normal traffic count retrieved successfully",
-            data: c
-        });
-    });
+            message: 'count of normal traffic..',
+            data: data
+        })
+    })
 };
 /*end query traffic*/

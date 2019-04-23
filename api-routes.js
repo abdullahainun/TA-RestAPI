@@ -56,11 +56,8 @@ router.route('/connlog/:uid')
 /** classification  **/
 router.route('/classifications')
     .get(classificationController.index);
-router.route('/classification/:start/:end')
+router.route('/classifications/:start/:end')
     .get(classificationController.bydaterange);
-router.route('/classification/:uid')
-    .get(classificationController.view)
-    .delete(classificationController.delete);
 router.route('/classification/getmaliciouscount')
     .get(classificationController.getMaliciousCount);
 router.route('/classification/getnormalcount')
