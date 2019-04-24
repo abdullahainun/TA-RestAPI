@@ -66,6 +66,8 @@ router.route('/classification/getnormalcount')
     .get(classificationController.getNormalCount);
 router.route('/classification/testjoin')
     .get(classificationController.testJoin);
+router.route('/classification/klasifikasicount')
+    .get(classificationController.klasifikasicount);
 // Export API routes
 module.exports = router;
 

@@ -1,28 +1,28 @@
 // Import contact model
-Classification = require('../models/classificationModel');
+Classification = require("../models/classificationModel");
 
 // Handle delete Classification
 exports.index = function (req, res) {
     res.json({
         error: false,
-        message: "Classification home list",
+        message: "Classification home list"
     });
 };
 
 // Handle index classification
 exports.malicious = function (req, res) {
-    var pageNo = parseInt(req.query.pageNo)
-    var size = parseInt(req.query.size)
-    var query = {}
+    var pageNo = parseInt(req.query.pageNo);
+    var size = parseInt(req.query.size);
+    var query = {};
     if (pageNo < 0 || pageNo === 0) {
         response = {
             error: true,
             message: "invalid page number, should start with 1"
         };
-        return res.json(response)
+        return res.json(response);
     }
-    query.skip = size * (pageNo - 1)
-    query.limit = size
+    query.skip = size * (pageNo - 1);
+    query.limit = size;
     // Find some documents
     Classification.aggregate(
         [{
@@ -31,20 +31,22 @@ exports.malicious = function (req, res) {
                 }
             },
             {
-                "$lookup": {
-                    "from": 'conns',
-                    "localField": 'uid',
-                    "foreignField": 'uid',
-                    "as": 'conns'
+                $lookup: {
+                    from: "conns",
+                    localField: "uid",
+                    foreignField: "uid",
+                    as: "conns"
                 }
-            }, {
-                "$lookup": {
-                    "from": 'dns',
-                    "localField": 'uid',
-                    "foreignField": 'uid',
-                    "as": 'dns'
+            },
+            {
+                $lookup: {
+                    from: "dns",
+                    localField: "uid",
+                    foreignField: "uid",
+                    as: "dns"
                 }
-            }, {
+            },
+            {
                 $project: {
                     _id: 0,
                     ts: "$ts",
@@ -63,11 +65,10 @@ exports.malicious = function (req, res) {
                             then: "malicious",
                             else: "normal"
                         }
-                    },
-
-
+                    }
                 }
-            }, {
+            },
+            {
                 $limit: 20
             }
         ],
@@ -81,31 +82,32 @@ exports.malicious = function (req, res) {
             } else {
                 response = {
                     error: false,
-                    message: "Classification logs retrieved successfully page " + req.query.pageNo,
+                    message: "Classification logs retrieved successfully page " +
+                        req.query.pageNo,
                     data: data
                 };
             }
             res.json(response);
-        });
-
+        }
+    );
 };
 //
 /*start top query*/
 
 // Handle index classification
 exports.normal = function (req, res) {
-    var pageNo = parseInt(req.query.pageNo)
-    var size = parseInt(req.query.size)
-    var query = {}
+    var pageNo = parseInt(req.query.pageNo);
+    var size = parseInt(req.query.size);
+    var query = {};
     if (pageNo < 0 || pageNo === 0) {
         response = {
             error: true,
             message: "invalid page number, should start with 1"
         };
-        return res.json(response)
+        return res.json(response);
     }
-    query.skip = size * (pageNo - 1)
-    query.limit = size
+    query.skip = size * (pageNo - 1);
+    query.limit = size;
     // Find some documents
     Classification.aggregate(
         [{
@@ -114,20 +116,22 @@ exports.normal = function (req, res) {
                 }
             },
             {
-                "$lookup": {
-                    "from": 'conns',
-                    "localField": 'uid',
-                    "foreignField": 'uid',
-                    "as": 'conns'
+                $lookup: {
+                    from: "conns",
+                    localField: "uid",
+                    foreignField: "uid",
+                    as: "conns"
                 }
-            }, {
-                "$lookup": {
-                    "from": 'dns',
-                    "localField": 'uid',
-                    "foreignField": 'uid',
-                    "as": 'dns'
+            },
+            {
+                $lookup: {
+                    from: "dns",
+                    localField: "uid",
+                    foreignField: "uid",
+                    as: "dns"
                 }
-            }, {
+            },
+            {
                 $project: {
                     _id: 0,
                     uid: "$ts",
@@ -146,11 +150,10 @@ exports.normal = function (req, res) {
                             then: "normal",
                             else: "malicious"
                         }
-                    },
-
-
+                    }
                 }
-            }, {
+            },
+            {
                 $limit: 20
             }
         ],
@@ -164,47 +167,51 @@ exports.normal = function (req, res) {
             } else {
                 response = {
                     error: false,
-                    message: "normal Classification logs retrieved successfully page " + req.query.pageNo,
+                    message: "normal Classification logs retrieved successfully page " +
+                        req.query.pageNo,
                     data: data
                 };
             }
             res.json(response);
-        });
-
+        }
+    );
 };
 //
 /*start top query*/
 
 exports.getQuery = function (req, res) {
-    Classification.aggregate([{
-            "$group": {
-                _id: "$query",
-                value: {
-                    $sum: 1
+    Classification.aggregate(
+        [{
+                $group: {
+                    _id: "$query",
+                    value: {
+                        $sum: 1
+                    }
                 }
             },
-        },
-        {
-            $project: {
-                _id: 0,
-                value: "$value",
-                name: "$_id",
-                sum: 1
+            {
+                $project: {
+                    _id: 0,
+                    value: "$value",
+                    name: "$_id",
+                    sum: 1
+                }
             }
-        }
-    ], function (err, result) {
-        if (err) {
+        ],
+        function (err, result) {
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err
+                });
+            }
             res.json({
-                error: true,
-                message: err,
+                error: false,
+                message: "normal query count retrieved successfully",
+                data: result
             });
         }
-        res.json({
-            error: false,
-            message: "normal query count retrieved successfully",
-            data: result
-        });
-    });
+    );
 };
 
 /*end top query*/
@@ -213,37 +220,39 @@ exports.getQuery = function (req, res) {
 exports.view = function (req, res) {
     // find each dnslog with a uid, selecting the `name` and `occupation` fields
     Classification.findOne({
-        'uid': req.params.uid
-    }, function (err, dnslog) {
-        if (err)
-            res.send(err);
-        res.json({
-            error: false,
-            message: 'dnslog details loading..',
-            data: dnslog
-        });
-    });
+            uid: req.params.uid
+        },
+        function (err, dnslog) {
+            if (err) res.send(err);
+            res.json({
+                error: false,
+                message: "dnslog details loading..",
+                data: dnslog
+            });
+        }
+    );
 };
 
 // Handle delete Classification
 exports.delete = function (req, res) {
     Classification.remove({
-        uid: req.params.uid
-    }, function (err, contact) {
-        if (err)
-            res.send(err);
+            uid: req.params.uid
+        },
+        function (err, contact) {
+            if (err) res.send(err);
 
-        res.json({
-            error: false,
-            message: 'Classification deleted'
-        });
-    });
+            res.json({
+                error: false,
+                message: "Classification deleted"
+            });
+        }
+    );
 };
 
 // get all malicious count of connlog
 exports.getMaliciousCount = function (req, res) {
     var q = Classification.find({
-        label: '1.0'
+        label: "1.0"
     }).count();
 
     q.exec(function (err, data) {
@@ -257,16 +266,16 @@ exports.getMaliciousCount = function (req, res) {
 
         res.json({
             error: false,
-            message: 'count of malicious traffic..',
+            message: "count of malicious traffic..",
             data: data
-        })
-    })
+        });
+    });
 };
 
 // get all normal count of connlog
 exports.getNormalCount = function (req, res) {
     var q = Classification.find({
-        label: '0.0'
+        label: "0.0"
     }).count();
 
     q.exec(function (err, data) {
@@ -280,34 +289,34 @@ exports.getNormalCount = function (req, res) {
 
         res.json({
             error: false,
-            message: 'count of normal traffic..',
+            message: "count of normal traffic..",
             data: data
-        })
-    })
+        });
+    });
 };
 /*end query traffic*/
 
 // get all normal count of connlog
 exports.testJoin = function (req, res) {
     var q = Classification.aggregate([{
-            "$match": {
-                "uid": "CEYlbF3sSupYgosEBj"
+            $match: {
+                uid: "CEYlbF3sSupYgosEBj"
             }
         },
         {
-            "$lookup": {
-                "from": 'conns',
-                "localField": 'uid',
-                "foreignField": 'uid',
-                "as": 'conns'
+            $lookup: {
+                from: "conns",
+                localField: "uid",
+                foreignField: "uid",
+                as: "conns"
             }
         },
         {
-            "$lookup": {
-                "from": 'dns',
-                "localField": 'uid',
-                "foreignField": 'uid',
-                "as": 'dns'
+            $lookup: {
+                from: "dns",
+                localField: "uid",
+                foreignField: "uid",
+                as: "dns"
             }
         }
     ]);
@@ -323,9 +332,54 @@ exports.testJoin = function (req, res) {
 
         res.json({
             error: false,
-            message: 'test join..',
+            message: "test join..",
             data: data
-        })
-    })
+        });
+    });
 };
 /*end query traffic*/
+
+// klasifikasi count
+exports.klasifikasicount = function (req, res) {
+    var q = Classification.aggregate([{
+            "$group": {
+                _id: "$label",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: {
+                    $cond: {
+                        if: {
+                            $gte: ["$_id", "1.0"]
+                        },
+                        then: "malicious",
+                        else: "normal"
+                    }
+                },
+                sum: 1
+            }
+        }
+    ]);
+
+    q.exec(function (err, data) {
+        // `posts` will be of length 20
+        if (err) {
+            res.json({
+                error: true,
+                message: err
+            });
+        }
+
+        res.json({
+            error: false,
+            message: "jumlah klasifikasi traffic..",
+            data: data
+        });
+    });
+};
