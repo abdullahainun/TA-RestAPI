@@ -10,7 +10,7 @@ exports.index = function (req, res) {
 };
 
 // Handle index classification
-exports.bydaterange = function (req, res) {
+exports.malicious = function (req, res) {
     var pageNo = parseInt(req.query.pageNo)
     var size = parseInt(req.query.size)
     var query = {}
@@ -26,28 +26,51 @@ exports.bydaterange = function (req, res) {
     // Find some documents
     Classification.aggregate(
         [{
-            $project: {
-                _id: 0,
-                uid: "$uid",
-                orig_h: "$orig_h",
-                orig_p: "$orig_p",
-                resp_h: "$resp_h",
-                resp_p: "$resp_p",
-                label: {
-                    $cond: {
-                        if: {
-                            $gte: ["$label", "0.0"]
-                        },
-                        then: "normal",
-                        else: "malicious"
-                    }
-                },
+                $match: {
+                    label: "1.0"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": 'conns',
+                    "localField": 'uid',
+                    "foreignField": 'uid',
+                    "as": 'conns'
+                }
+            }, {
+                "$lookup": {
+                    "from": 'dns',
+                    "localField": 'uid',
+                    "foreignField": 'uid',
+                    "as": 'dns'
+                }
+            }, {
+                $project: {
+                    _id: 0,
+                    ts: "$ts",
+                    uid: "$uid",
+                    orig_h: "$orig_h",
+                    orig_p: "$orig_p",
+                    resp_h: "$resp_h",
+                    resp_p: "$resp_p",
+                    conns: "$conns",
+                    dns: "$dns",
+                    label: {
+                        $cond: {
+                            if: {
+                                $gte: ["$label", "1.0"]
+                            },
+                            then: "malicious",
+                            else: "normal"
+                        }
+                    },
 
 
+                }
+            }, {
+                $limit: 20
             }
-        }, {
-            $limit: 10
-        }],
+        ],
         function (err, data) {
             // Mongo command to fetch all data from collection.
             if (err) {
@@ -68,6 +91,90 @@ exports.bydaterange = function (req, res) {
 };
 //
 /*start top query*/
+
+// Handle index classification
+exports.normal = function (req, res) {
+    var pageNo = parseInt(req.query.pageNo)
+    var size = parseInt(req.query.size)
+    var query = {}
+    if (pageNo < 0 || pageNo === 0) {
+        response = {
+            error: true,
+            message: "invalid page number, should start with 1"
+        };
+        return res.json(response)
+    }
+    query.skip = size * (pageNo - 1)
+    query.limit = size
+    // Find some documents
+    Classification.aggregate(
+        [{
+                $match: {
+                    label: "0.0"
+                }
+            },
+            {
+                "$lookup": {
+                    "from": 'conns',
+                    "localField": 'uid',
+                    "foreignField": 'uid',
+                    "as": 'conns'
+                }
+            }, {
+                "$lookup": {
+                    "from": 'dns',
+                    "localField": 'uid',
+                    "foreignField": 'uid',
+                    "as": 'dns'
+                }
+            }, {
+                $project: {
+                    _id: 0,
+                    uid: "$ts",
+                    uid: "$uid",
+                    orig_h: "$orig_h",
+                    orig_p: "$orig_p",
+                    resp_h: "$resp_h",
+                    resp_p: "$resp_p",
+                    conns: "$conns",
+                    dns: "$dns",
+                    label: {
+                        $cond: {
+                            if: {
+                                $gte: ["$label", "0.0"]
+                            },
+                            then: "normal",
+                            else: "malicious"
+                        }
+                    },
+
+
+                }
+            }, {
+                $limit: 20
+            }
+        ],
+        function (err, data) {
+            // Mongo command to fetch all data from collection.
+            if (err) {
+                response = {
+                    error: true,
+                    message: "Error fetching data"
+                };
+            } else {
+                response = {
+                    error: false,
+                    message: "normal Classification logs retrieved successfully page " + req.query.pageNo,
+                    data: data
+                };
+            }
+            res.json(response);
+        });
+
+};
+//
+/*start top query*/
+
 exports.getQuery = function (req, res) {
     Classification.aggregate([{
             "$group": {
@@ -174,6 +281,49 @@ exports.getNormalCount = function (req, res) {
         res.json({
             error: false,
             message: 'count of normal traffic..',
+            data: data
+        })
+    })
+};
+/*end query traffic*/
+
+// get all normal count of connlog
+exports.testJoin = function (req, res) {
+    var q = Classification.aggregate([{
+            "$match": {
+                "uid": "CEYlbF3sSupYgosEBj"
+            }
+        },
+        {
+            "$lookup": {
+                "from": 'conns',
+                "localField": 'uid',
+                "foreignField": 'uid',
+                "as": 'conns'
+            }
+        },
+        {
+            "$lookup": {
+                "from": 'dns',
+                "localField": 'uid',
+                "foreignField": 'uid',
+                "as": 'dns'
+            }
+        }
+    ]);
+
+    q.exec(function (err, data) {
+        // `posts` will be of length 20
+        if (err) {
+            res.json({
+                error: true,
+                message: err
+            });
+        }
+
+        res.json({
+            error: false,
+            message: 'test join..',
             data: data
         })
     })
