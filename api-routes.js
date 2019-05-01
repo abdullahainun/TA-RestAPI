@@ -60,14 +60,16 @@ router.route('/klasifikasimalicious/:start/:end')
     .get(classificationController.malicious);
 router.route('/klasifikasinormal/:start/:end')
     .get(classificationController.normal);
-router.route('/classification/getmaliciouscount')
+router.route('/classification/getmaliciouscount/:start/:end')
     .get(classificationController.getMaliciousCount);
-router.route('/classification/getnormalcount')
+router.route('/classification/getnormalcount/:start/:end')
     .get(classificationController.getNormalCount);
 router.route('/classification/testjoin')
     .get(classificationController.testJoin);
-router.route('/classification/klasifikasicount')
+router.route('/classification/klasifikasicount/:start/:end')
     .get(classificationController.klasifikasicount);
+router.route('/classification/gettopresp/:start/:end')
+    .get(classificationController.getTopResp);
 // Export API routes
 module.exports = router;
 

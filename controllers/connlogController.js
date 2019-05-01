@@ -50,7 +50,7 @@ exports.getAllCount = function (req, res) {
             });
         }
         res.json({
-            erro: false,
+            error: false,
             message: "top originator of dns logs logs from " + startDate + " until " + endDate + " retrieved successfully",
             data: c
         });
@@ -63,6 +63,13 @@ exports.getProtokol = function (req, res) {
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$proto",
                 value: {
@@ -100,6 +107,13 @@ exports.getTopOrigin = function (req, res) {
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$id_orig_h",
                 value: {
@@ -124,7 +138,7 @@ exports.getTopOrigin = function (req, res) {
         }
         res.json({
             error: false,
-            message: "top origin of Conn logs retrieved successfully",
+            message: "top origin of Conn logs retrieved successfully " + startDate + " until " + endDate,
             data: result
         });
     });
@@ -138,8 +152,15 @@ exports.getTopResp = function (req, res) {
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
-                _id: "$id_resp_h",
+                _id: "$resp_h",
                 value: {
                     $sum: 1
                 }
@@ -167,7 +188,6 @@ exports.getTopResp = function (req, res) {
         });
     });
 };
-
 /*end top resp*/
 
 // count data
@@ -175,13 +195,33 @@ exports.gettotal = function (req, res) {
     var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
-    Connlog.count({}, function (err, count) {
+    Connlog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
+            $group: {
+                _id: null,
+                total: {
+                    $sum: 1
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0
+            }
+        }
+    ], function (err, count) {
         if (err)
             res.send(err);
 
         res.json({
             error: false,
-            message: 'Total baris data',
+            message: 'Total baris data from ' + startDate + " until " + endDate,
             data: count
         });
     })
@@ -220,51 +260,3 @@ exports.delete = function (req, res) {
         });
     });
 };
-
-
-// Handle create contact actions
-// exports.new = function (req, res) {
-//     var connlog = new Connlog();
-//     connlog.ts = req.body.ts ? req.body.ts : connlog.ts;
-//     connlog.uid = req.body.uid;
-//     connlog.id_orig_h = req.body.id_orig_h;
-//     connlog.id_orig_p = req.body.id_orig_p;
-//     connlog.id_resp_h = req.body.id_resp_h;
-//     connlog.id_resp_p = req.body.id_resp_p;
-//     connlog.proto = req.body.proto;
-//     connlog.service = req.body.service;
-//     connlog.duration = req.body.duration;
-//     connlog.orig_bytes = req.body.orig_bytes;
-//     connlog.resp_bytes = req.body.resp_bytes;
-//     connlog.conn_state = req.body.conn_state;
-//     connlog.local_orig = req.body.local_orig;
-//     connlog.local_resp = req.body.local_resp;
-//     connlog.missed_bytes = req.body.missed_bytes;
-//     connlog.history = req.body.history;
-//     connlog.orig_pkts = req.body.orig_pkts;
-//     connlog.orig_ip_bytes = req.body.orig_ip_bytes;
-//     connlog.resp_pkts = req.body.resp_pkts;
-//     connlog.resp_ip_bytes = req.body.resp_ip_bytes;
-//     connlog.PX = req.body.PX;
-//     connlog.NNP = req.body.NNP;
-//     connlog.NSP = req.body.NSP;
-//     connlog.PSP = req.body.PSP;
-//     connlog.IOPR = req.body.IOPR;
-//     connlog.Reconnect = req.body.Reconnect;
-//     connlog.FPS = req.body.FPS;
-//     connlog.TBT = req.body.TBT;
-//     connlog.APL = req.body.APL;
-//     connlog.PPS = req.body.PPS;
-//     connlog.label = req.body.label;
-
-//     // save the contact and check for errors
-//     connlog.save(function (err) {
-//         if (err)
-//             res.json(err);
-
-//         res.json({
-//             message: 'New connlog created!',
-//             data: connlog
-//         });
-//     });
-// };

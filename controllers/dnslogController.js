@@ -41,6 +41,13 @@ exports.getTopOrigin = function (req, res) {
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$id_orig_h",
                 count: {
@@ -72,6 +79,13 @@ exports.getTopResp = function (req, res) {
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$id_resp_h",
                 value: {
@@ -105,7 +119,17 @@ exports.getTopResp = function (req, res) {
 /*end top resp*/
 /*start top query*/
 exports.getQuery = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     Dnslog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$query",
                 value: {
@@ -130,7 +154,7 @@ exports.getQuery = function (req, res) {
         }
         res.json({
             error: false,
-            message: "Top Query retrieved successfully",
+            message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
             data: result
         });
     });
@@ -140,8 +164,17 @@ exports.getQuery = function (req, res) {
 
 /*start top rcode*/
 exports.getRcode = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Dnslog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$rcode_name",
                 value: {
@@ -166,7 +199,7 @@ exports.getRcode = function (req, res) {
         }
         res.json({
             error: false,
-            message: "top rcode_name of dns traffic retrieved successfully",
+            message: "top rcode_name of dns traffic retrieved successfully from " + startDate + "until" + endDate,
             data: result
         });
     });

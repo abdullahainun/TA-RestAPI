@@ -1,4 +1,5 @@
 // Import contact model
+var moment = require('moment');
 Classification = require("../models/classificationModel");
 
 // Handle delete Classification
@@ -11,9 +12,10 @@ exports.index = function (req, res) {
 
 // Handle index classification
 exports.malicious = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
     var pageNo = parseInt(req.query.pageNo);
     var size = parseInt(req.query.size);
-    var query = {};
     if (pageNo < 0 || pageNo === 0) {
         response = {
             error: true,
@@ -21,13 +23,15 @@ exports.malicious = function (req, res) {
         };
         return res.json(response);
     }
-    query.skip = size * (pageNo - 1);
-    query.limit = size;
     // Find some documents
     Classification.aggregate(
         [{
                 $match: {
-                    label: "1.0"
+                    label: "1.0",
+                    ts: {
+                        "$gte": new Date(startDate),
+                        "$lte": new Date(endDate)
+                    }
                 }
             },
             {
@@ -69,10 +73,14 @@ exports.malicious = function (req, res) {
                 }
             },
             {
-                $limit: 20
+                $limit: size
+            },
+            {
+                $skip: size * (pageNo - 1)
             }
         ],
         function (err, data) {
+            // console.log(data)
             // Mongo command to fetch all data from collection.
             if (err) {
                 response = {
@@ -82,7 +90,7 @@ exports.malicious = function (req, res) {
             } else {
                 response = {
                     error: false,
-                    message: "Classification logs retrieved successfully page " +
+                    message: "Malicious classification logs retrieved successfully page " +
                         req.query.pageNo,
                     data: data
                 };
@@ -96,9 +104,10 @@ exports.malicious = function (req, res) {
 
 // Handle index classification
 exports.normal = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
     var pageNo = parseInt(req.query.pageNo);
     var size = parseInt(req.query.size);
-    var query = {};
     if (pageNo < 0 || pageNo === 0) {
         response = {
             error: true,
@@ -106,13 +115,15 @@ exports.normal = function (req, res) {
         };
         return res.json(response);
     }
-    query.skip = size * (pageNo - 1);
-    query.limit = size;
     // Find some documents
     Classification.aggregate(
         [{
                 $match: {
-                    label: "0.0"
+                    label: "0.0",
+                    ts: {
+                        "$gte": new Date(startDate),
+                        "$lte": new Date(endDate)
+                    }
                 }
             },
             {
@@ -154,7 +165,10 @@ exports.normal = function (req, res) {
                 }
             },
             {
-                $limit: 20
+                $skip: pageNo
+            },
+            {
+                $limit: size
             }
         ],
         function (err, data) {
@@ -177,44 +191,6 @@ exports.normal = function (req, res) {
     );
 };
 //
-/*start top query*/
-
-exports.getQuery = function (req, res) {
-    Classification.aggregate(
-        [{
-                $group: {
-                    _id: "$query",
-                    value: {
-                        $sum: 1
-                    }
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    value: "$value",
-                    name: "$_id",
-                    sum: 1
-                }
-            }
-        ],
-        function (err, result) {
-            if (err) {
-                res.json({
-                    error: true,
-                    message: err
-                });
-            }
-            res.json({
-                error: false,
-                message: "normal query count retrieved successfully",
-                data: result
-            });
-        }
-    );
-};
-
-/*end top query*/
 
 // Handle view Classification info
 exports.view = function (req, res) {
@@ -251,8 +227,15 @@ exports.delete = function (req, res) {
 
 // get all malicious count of connlog
 exports.getMaliciousCount = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     var q = Classification.find({
-        label: "1.0"
+        label: "1.0",
+        ts: {
+            '$gte': startDate,
+            '$lte': endDate
+        }
     }).count();
 
     q.exec(function (err, data) {
@@ -266,7 +249,7 @@ exports.getMaliciousCount = function (req, res) {
 
         res.json({
             error: false,
-            message: "count of malicious traffic..",
+            message: "count of malicious traffic from " + startDate + " until " + endDate,
             data: data
         });
     });
@@ -274,8 +257,15 @@ exports.getMaliciousCount = function (req, res) {
 
 // get all normal count of connlog
 exports.getNormalCount = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     var q = Classification.find({
-        label: "0.0"
+        label: "0.0",
+        ts: {
+            '$gte': startDate,
+            '$lte': endDate
+        }
     }).count();
 
     q.exec(function (err, data) {
@@ -289,7 +279,7 @@ exports.getNormalCount = function (req, res) {
 
         res.json({
             error: false,
-            message: "count of normal traffic..",
+            message: "count of normal traffic.. from " + startDate + " until " + endDate,
             data: data
         });
     });
@@ -341,13 +331,23 @@ exports.testJoin = function (req, res) {
 
 // klasifikasi count
 exports.klasifikasicount = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     var q = Classification.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
             "$group": {
                 _id: "$label",
                 value: {
                     $sum: 1
                 }
-            },
+            }
         },
         {
             $project: {
@@ -378,8 +378,51 @@ exports.klasifikasicount = function (req, res) {
 
         res.json({
             error: false,
-            message: "jumlah klasifikasi traffic..",
+            message: "jumlah klasifikasi traffic " + startDate + " until " + endDate,
             data: data
+        });
+    });
+};
+
+/*start top resp*/
+exports.getTopResp = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
+    Classification.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
+            "$group": {
+                _id: "$resp_h",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            res.json({
+                error: true,
+                message: err,
+            });
+        }
+        res.json({
+            error: false,
+            message: "top responder of Conn logs retrieved successfully",
+            data: result
         });
     });
 };

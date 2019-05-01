@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 
 // Setup schema
 var classificationSchema = mongoose.Schema({
+    ts: {
+        type: Date,
+        required: true
+    },
     uid: {
         type: String,
         required: true
@@ -18,7 +22,7 @@ var classificationSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    resp_p: {   
+    resp_p: {
         type: Number,
         required: true
     },
