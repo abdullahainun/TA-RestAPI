@@ -160,7 +160,7 @@ exports.getTopResp = function (req, res) {
             }
         }, {
             "$group": {
-                _id: "$resp_h",
+                _id: "$id_resp_h",
                 value: {
                     $sum: 1
                 }
