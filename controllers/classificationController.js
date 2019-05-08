@@ -73,7 +73,7 @@ exports.malicious = function (req, res) {
                 }
             },
             {
-                $limit: size
+                $limit: size * (pageNo - 1) + size
             },
             {
                 $skip: size * (pageNo - 1)
@@ -165,10 +165,9 @@ exports.normal = function (req, res) {
                 }
             },
             {
-                $skip: pageNo
-            },
-            {
-                $limit: size
+                $limit: size * (pageNo - 1) + size
+            }, {
+                $skip: size * (pageNo - 1)
             }
         ],
         function (err, data) {
