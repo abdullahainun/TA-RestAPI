@@ -64,6 +64,10 @@ router.route('/classification/getmaliciouscount/:start/:end')
     .get(classificationController.getMaliciousCount);
 router.route('/classification/getnormalcount/:start/:end')
     .get(classificationController.getNormalCount);
+router.route('/classification/totalmalicious')
+    .get(classificationController.totalMalicious);
+router.route('/classification/totalnormal')
+    .get(classificationController.totalNormal);    
 router.route('/classification/testjoin')
     .get(classificationController.testJoin);
 router.route('/classification/klasifikasicount/:start/:end')

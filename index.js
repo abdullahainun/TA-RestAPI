@@ -21,7 +21,7 @@ app.use(cors())
 
 // Connect to Mongoose and set connection variable
 // mongoose.connect('mongodb://admin:jarkoM@abdullahainun.me:27017/aal?replicaSet=rs0&authSource=admin', { useNewUrlParser: true });
-mongoose.connect('mongodb://admin:jarkoM@abdullahainun.me:27017/aal?replicaSet=rs0&authSource=admin', {
+mongoose.connect('mongodb://admin:jarkoM@127.0.0.1:27017/aal?replicaSet=rs0&authSource=admin', {
     useNewUrlParser: true
 });
 

@@ -254,6 +254,29 @@ exports.getMaliciousCount = function (req, res) {
     });
 };
 
+// get all malicious
+exports.totalMalicious = function (req, res) {
+    var q = Classification.find({
+        label: "1.0"
+    }).count();
+
+    q.exec(function (err, data) {
+        // `posts` will be of length 20
+        if (err) {
+            res.json({
+                error: true,
+                message: err
+            });
+        }
+
+        res.json({
+            error: false,
+            message: "total malicious traffic from ",
+            data: data
+        });
+    });
+};
+
 // get all normal count of connlog
 exports.getNormalCount = function (req, res) {
     var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
@@ -284,6 +307,30 @@ exports.getNormalCount = function (req, res) {
     });
 };
 /*end query traffic*/
+
+// get all malicious count of connlog
+exports.totalNormal = function (req, res) {
+    var q = Classification.find({
+        label: "0.0"
+    }).count();
+
+    q.exec(function (err, data) {
+        // `posts` will be of length 20
+        if (err) {
+            res.json({
+                error: true,
+                message: err
+            });
+        }
+
+        res.json({
+            error: false,
+            message: "total normal traffic from ",
+            data: data
+        });
+    });
+};
+
 
 // get all normal count of connlog
 exports.testJoin = function (req, res) {

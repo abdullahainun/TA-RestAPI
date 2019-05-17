@@ -160,6 +160,49 @@ exports.getQuery = function (req, res) {
     });
 };
 
+/*start top query*/
+exports.testing = function (req, res) {
+    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
+    Dnslog.aggregate([{
+            $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
+            "$group": {
+                _id: "$ts",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            res.json({
+                error: true,
+                message: err,
+            });
+        }
+        res.json({
+            error: false,
+            message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
+            data: result
+        });
+    });
+};
+
 /*end top query*/
 
 /*start top rcode*/
