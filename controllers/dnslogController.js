@@ -271,25 +271,47 @@ exports.bydaterange = function (req, res) {
     var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
-    var pageNo = parseInt(req.query.pageNo)
-    var size = parseInt(req.query.size)
-    var query = {}
-    if (pageNo < 0 || pageNo === 0) {
-        response = {
-            error: true,
-            message: "invalid page number, should start with 1"
-        };
-        return res.json(response)
-    }
-    query.skip = size * (pageNo - 1)
-    query.limit = size
+    // var pageNo = parseInt(req.query.pageNo)
+    // var size = parseInt(req.query.size)
+    // var query = {}
+    // if (pageNo < 0 || pageNo === 0) {
+    //     response = {
+    //         error: true,
+    //         message: "invalid page number, should start with 1"
+    //     };
+    //     return res.json(response)
+    // }
+    // query.skip = size * (pageNo - 1)
+    // query.limit = size
     // Find some documents
+    // Dnslog.find({
+    //     ts: {
+    //         '$gte': startDate,
+    //         '$lte': endDate
+    //     }
+    // }, {}, query, function (err, data) {
+    //     // Mongo command to fetch all data from collection.
+    //     if (err) {
+    //         response = {
+    //             error: true,
+    //             message: "Error fetching data"
+    //         };
+    //     } else {
+    //         response = {
+    //             error: false,
+    //             message: 'dnslog from ' + startDate + ' until ' + endDate + "DNS Log page " + req.query.pageNo,
+    //             data: data
+    //         };
+    //     }
+    //     res.json(response);
+    // });
+
     Dnslog.find({
         ts: {
             '$gte': startDate,
             '$lte': endDate
         }
-    }, {}, query, function (err, data) {
+    }, function (err, data) {
         // Mongo command to fetch all data from collection.
         if (err) {
             response = {
@@ -299,7 +321,7 @@ exports.bydaterange = function (req, res) {
         } else {
             response = {
                 error: false,
-                message: 'dnslog from ' + startDate + ' until ' + endDate + "DNS Log page " + req.query.pageNo,
+                message: 'dnslog from ' + startDate + ' until ' + endDate + "DNS Log page ",
                 data: data
             };
         }
