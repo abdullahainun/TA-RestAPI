@@ -90,8 +90,7 @@ exports.malicious = function (req, res) {
             } else {
                 response = {
                     error: false,
-                    message: "Malicious classification logs retrieved successfully page " +
-                        req.query.pageNo,
+                    message: "Malicious classification logs retrieved successfully page ",
                     data: data
                 };
             }
