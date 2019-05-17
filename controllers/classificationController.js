@@ -14,15 +14,15 @@ exports.index = function (req, res) {
 exports.malicious = function (req, res) {
     var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-    var pageNo = parseInt(req.query.pageNo);
-    var size = parseInt(req.query.size);
-    if (pageNo < 0 || pageNo === 0) {
-        response = {
-            error: true,
-            message: "invalid page number, should start with 1"
-        };
-        return res.json(response);
-    }
+    // var pageNo = parseInt(req.query.pageNo);
+    // var size = parseInt(req.query.size);
+    // if (pageNo < 0 || pageNo === 0) {
+    //     response = {
+    //         error: true,
+    //         message: "invalid page number, should start with 1"
+    //     };
+    //     return res.json(response);
+    // }
     // Find some documents
     Classification.aggregate(
         [{
@@ -71,13 +71,13 @@ exports.malicious = function (req, res) {
                         }
                     }
                 }
-            },
-            {
-                $limit: size * (pageNo - 1) + size
-            },
-            {
-                $skip: size * (pageNo - 1)
             }
+            // {
+            //     $limit: size * (pageNo - 1) + size
+            // },
+            // {
+            //     $skip: size * (pageNo - 1)
+            // }
         ],
         function (err, data) {
             // console.log(data)
@@ -106,15 +106,15 @@ exports.malicious = function (req, res) {
 exports.normal = function (req, res) {
     var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-    var pageNo = parseInt(req.query.pageNo);
-    var size = parseInt(req.query.size);
-    if (pageNo < 0 || pageNo === 0) {
-        response = {
-            error: true,
-            message: "invalid page number, should start with 1"
-        };
-        return res.json(response);
-    }
+    // var pageNo = parseInt(req.query.pageNo);
+    // var size = parseInt(req.query.size);
+    // if (pageNo < 0 || pageNo === 0) {
+    //     response = {
+    //         error: true,
+    //         message: "invalid page number, should start with 1"
+    //     };
+    //     return res.json(response);
+    // }
     // Find some documents
     Classification.aggregate(
         [{
@@ -163,12 +163,12 @@ exports.normal = function (req, res) {
                         }
                     }
                 }
-            },
-            {
-                $limit: size * (pageNo - 1) + size
-            }, {
-                $skip: size * (pageNo - 1)
             }
+            // {
+            //     $limit: size * (pageNo - 1) + size
+            // }, {
+            //     $skip: size * (pageNo - 1)
+            // }
         ],
         function (err, data) {
             // Mongo command to fetch all data from collection.
@@ -180,8 +180,7 @@ exports.normal = function (req, res) {
             } else {
                 response = {
                     error: false,
-                    message: "normal Classification logs retrieved successfully page " +
-                        req.query.pageNo,
+                    message: "normal Classification logs retrieved successfully page ",
                     data: data
                 };
             }
