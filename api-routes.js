@@ -23,15 +23,15 @@ router.route('/dnslog/:uid')
     .delete(dnslogController.delete);
 router.route('/dnslog/:start/:end/:jam')
     .get(dnslogController.bydaterange)
-router.route('/dnslogtotal/:start/:end')
+router.route('/dnslogtotal/:start/:end/:jam')
     .get(dnslogController.gettotal);
-router.route('/dnslogorigh/:start/:end')
+router.route('/dnslogorigh/:start/:end/:jam')
     .get(dnslogController.getTopOrigin);
-router.route('/dnslogresph/:start/:end')
+router.route('/dnslogresph/:start/:end/:jam')
     .get(dnslogController.getTopResp);
-router.route('/dnslogqueries/:start/:end')
+router.route('/dnslogqueries/:start/:end/:jam')
     .get(dnslogController.getQuery);
-router.route('/dnslogrcodes/:start/:end')
+router.route('/dnslogrcodes/:start/:end/:jam')
     .get(dnslogController.getRcode);
 
 // dns log kurang modifikasi select by date range
@@ -39,15 +39,15 @@ router.route('/dnslogrcodes/:start/:end')
 /** connection log **/
 // router.route('/connlogs')
 //     .get(connlogController.index)
-router.route('/connlogallcount/:start/:end')
+router.route('/connlogallcount/:start/:end/:jam')
     .get(connlogController.getAllCount);
-router.route('/connlogprotokol/:start/:end')
+router.route('/connlogprotokol/:start/:end/:jam')
     .get(connlogController.getProtokol);
-router.route('/connlogtoporigin/:start/:end')
+router.route('/connlogtoporigin/:start/:end/:jam')
     .get(connlogController.getTopOrigin);
-router.route('/connlogtopresp/:start/:end')
+router.route('/connlogtopresp/:start/:end/:jam')
     .get(connlogController.getTopResp);
-router.route('/connlogtotal/:start/:end')
+router.route('/connlogtotal/:start/:end/:jam')
     .get(connlogController.gettotal);
 router.route('/connlog/:uid')
     .get(connlogController.view)
@@ -56,9 +56,9 @@ router.route('/connlog/:uid')
 /** classification  **/
 router.route('/classifications')
     .get(classificationController.index);
-router.route('/klasifikasimalicious/:start/:end')
+router.route('/klasifikasimalicious/:start/:end/:jam')
     .get(classificationController.malicious);
-router.route('/klasifikasinormal/:start/:end')
+router.route('/klasifikasinormal/:start/:end/:jam')
     .get(classificationController.normal);
 router.route('/classification/getmaliciouscount/:start/:end')
     .get(classificationController.getMaliciousCount);
@@ -70,9 +70,9 @@ router.route('/classification/totalnormal')
     .get(classificationController.totalNormal);    
 router.route('/classification/testjoin')
     .get(classificationController.testJoin);
-router.route('/classification/klasifikasicount/:start/:end')
+router.route('/classification/klasifikasicount/:start/:end/:jam')
     .get(classificationController.klasifikasicount);
-router.route('/classification/gettopresp/:start/:end')
+router.route('/classification/gettopresp/:start/:end/:jam')
     .get(classificationController.getTopResp);
 // Export API routes
 module.exports = router;

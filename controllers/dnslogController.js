@@ -37,8 +37,8 @@ exports.index = function (req, res) {
 //
 /*start top originator*/
 exports.getTopOrigin = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
             $match: {
@@ -75,8 +75,8 @@ exports.getTopOrigin = function (req, res) {
 
 /*start top resp*/
 exports.getTopResp = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
             $match: {
@@ -119,8 +119,8 @@ exports.getTopResp = function (req, res) {
 /*end top resp*/
 /*start top query*/
 exports.getQuery = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Dnslog.aggregate([{
             $match: {
@@ -207,8 +207,8 @@ exports.testing = function (req, res) {
 
 /*start top rcode*/
 exports.getRcode = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Dnslog.aggregate([{
             $match: {
@@ -266,45 +266,10 @@ exports.byuid = function (req, res) {
 };
 
 
-// // Handle view dns log by date range
+// Handle view dns log by date range
 exports.bydaterange = function (req, res) {
-    var startDate = moment(req.params.start + + "T00:00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T01:00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-
-    // var pageNo = parseInt(req.query.pageNo)
-    // var size = parseInt(req.query.size)
-    // var query = {}
-    // if (pageNo < 0 || pageNo === 0) {
-    //     response = {
-    //         error: true,
-    //         message: "invalid page number, should start with 1"
-    //     };
-    //     return res.json(response)
-    // }
-    // query.skip = size * (pageNo - 1)
-    // query.limit = size
-    // Find some documents
-    // Dnslog.find({
-    //     ts: {
-    //         '$gte': startDate,
-    //         '$lte': endDate
-    //     }
-    // }, {}, query, function (err, data) {
-    //     // Mongo command to fetch all data from collection.
-    //     if (err) {
-    //         response = {
-    //             error: true,
-    //             message: "Error fetching data"
-    //         };
-    //     } else {
-    //         response = {
-    //             error: false,
-    //             message: 'dnslog from ' + startDate + ' until ' + endDate + "DNS Log page " + req.query.pageNo,
-    //             data: data
-    //         };
-    //     }
-    //     res.json(response);
-    // });
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Dnslog.find({
         ts: {

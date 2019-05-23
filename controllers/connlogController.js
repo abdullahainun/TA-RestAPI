@@ -59,8 +59,8 @@ exports.getAllCount = function (req, res) {
 
 /*start protokol*/
 exports.getProtokol = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
             $match: {
@@ -103,8 +103,8 @@ exports.getProtokol = function (req, res) {
 /*end protokol*/
 /*start top originator*/
 exports.getTopOrigin = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
             $match: {
@@ -148,8 +148,8 @@ exports.getTopOrigin = function (req, res) {
 
 /*start top resp*/
 exports.getTopResp = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
             $match: {
@@ -192,8 +192,8 @@ exports.getTopResp = function (req, res) {
 
 // count data
 exports.gettotal = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Connlog.aggregate([{
             $match: {

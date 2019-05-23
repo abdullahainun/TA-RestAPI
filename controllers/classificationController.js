@@ -12,17 +12,9 @@ exports.index = function (req, res) {
 
 // Handle index classification
 exports.malicious = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-    // var pageNo = parseInt(req.query.pageNo);
-    // var size = parseInt(req.query.size);
-    // if (pageNo < 0 || pageNo === 0) {
-    //     response = {
-    //         error: true,
-    //         message: "invalid page number, should start with 1"
-    //     };
-    //     return res.json(response);
-    // }
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     // Find some documents
     Classification.aggregate(
         [{
@@ -72,12 +64,6 @@ exports.malicious = function (req, res) {
                     }
                 }
             }
-            // {
-            //     $limit: size * (pageNo - 1) + size
-            // },
-            // {
-            //     $skip: size * (pageNo - 1)
-            // }
         ],
         function (err, data) {
             // console.log(data)
@@ -103,18 +89,9 @@ exports.malicious = function (req, res) {
 
 // Handle index classification
 exports.normal = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-    // var pageNo = parseInt(req.query.pageNo);
-    // var size = parseInt(req.query.size);
-    // if (pageNo < 0 || pageNo === 0) {
-    //     response = {
-    //         error: true,
-    //         message: "invalid page number, should start with 1"
-    //     };
-    //     return res.json(response);
-    // }
-    // Find some documents
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+
     Classification.aggregate(
         [{
                 $match: {
@@ -163,11 +140,6 @@ exports.normal = function (req, res) {
                     }
                 }
             }
-            // {
-            //     $limit: size * (pageNo - 1) + size
-            // }, {
-            //     $skip: size * (pageNo - 1)
-            // }
         ],
         function (err, data) {
             // Mongo command to fetch all data from collection.
@@ -430,8 +402,8 @@ exports.klasifikasicount = function (req, res) {
 
 /*start top resp*/
 exports.getTopResp = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     Classification.aggregate([{
             $match: {
