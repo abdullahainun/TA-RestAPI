@@ -21,7 +21,7 @@ var classificationController = require('./controllers/classificationController')
 router.route('/dnslog/:uid')
     .get(dnslogController.byuid)
     .delete(dnslogController.delete);
-router.route('/dnslog/:start/:end')
+router.route('/dnslog/:start/:end/:jam')
     .get(dnslogController.bydaterange)
 router.route('/dnslogtotal/:start/:end')
     .get(dnslogController.gettotal);
@@ -76,25 +76,3 @@ router.route('/classification/gettopresp/:start/:end')
     .get(classificationController.getTopResp);
 // Export API routes
 module.exports = router;
-
-
-
-// old
-// Contact routes
-// router.route('/contacts')
-//     .get(contactController.index)
-//     .post(contactController.new);
-
-// router.route('/contacts/:contact_id')
-//     .get(contactController.view)
-//     .patch(contactController.update)
-//     .put(contactController.update)
-//     .delete(contactController.delete);
-
-// // Intel Logs
-// router.route('/intellogs')
-//     .get(intellogController.index);
-
-// router.route('/intellog/:uid')
-//     .get(intellogController.view)
-//     .delete(intellogController.delete);
