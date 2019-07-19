@@ -15,74 +15,150 @@ exports.malicious = function (req, res) {
     var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
-    // Find some documents
-    Classification.aggregate(
-        [{
-                $match: {
-                    label: "1.0",
-                    ts: {
-                        "$gte": new Date(startDate),
-                        "$lte": new Date(endDate)
-                    }
-                }
-            },
-            {
-                $lookup: {
-                    from: "conns",
-                    localField: "uid",
-                    foreignField: "uid",
-                    as: "conns"
-                }
-            },
-            {
-                $lookup: {
-                    from: "dns",
-                    localField: "uid",
-                    foreignField: "uid",
-                    as: "dns"
-                }
-            },
-            {
-                $project: {
-                    _id: 0,
-                    ts: "$ts",
-                    uid: "$uid",
-                    orig_h: "$orig_h",
-                    orig_p: "$orig_p",
-                    resp_h: "$resp_h",
-                    resp_p: "$resp_p",
-                    conns: "$conns",
-                    dns: "$dns",
-                    label: {
-                        $cond: {
-                            if: {
-                                $gte: ["$label", "1.0"]
-                            },
-                            then: "malicious",
-                            else: "normal"
-                        }
-                    }
-                }
+    var queryDetailMalicious = [{
+        $match: {
+            label: "1.0",
+            ts: {
+                "$gte": new Date(startDate),
+                "$lte": new Date(endDate)
             }
-        ],
-        function (err, data) {
-            // console.log(data)
-            // Mongo command to fetch all data from collection.
-            if (err) {
-                response = {
-                    error: true,
-                    message: "Error fetching data"
-                };
-            } else {
-                response = {
-                    error: false,
-                    message: "Malicious classification logs retrieved successfully page ",
-                    data: data
-                };
-            }
-            res.json(response);
         }
-    );
+    },
+    // {
+    //     $lookup: {
+    //         from: "conns",
+    //         localField: "uid",
+    //         foreignField: "uid",
+    //         as: "conns"
+    //     }
+    // },
+    // {
+    //     $lookup: {
+    //         from: "dns",
+    //         localField: "uid",
+    //         foreignField: "uid",
+    //         as: "dns"
+    //     }
+    // },
+    {
+        $project: {
+            _id: 0,
+            ts: "$ts",
+            uid: "$uid",
+            orig_h: "$orig_h",
+            orig_p: "$orig_p",
+            resp_h: "$resp_h",
+            resp_p: "$resp_p",
+            // conns: "$conns",
+            // dns: "$dns",
+            label: {
+                $cond: {
+                    if: {
+                        $gte: ["$label", "1.0"]
+                    },
+                    then: "malicious",
+                    else: "normal"
+                }
+            }
+        }
+    },
+    { $sort : { _id : -1 } }
+];
+    var queryTopMalicious = [{
+            $match: {
+                label: "1.0",
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        },
+        // {
+        //     $lookup: {
+        //         from: "conns",
+        //         localField: "uid",
+        //         foreignField: "uid",
+        //         as: "conns"
+        //     }
+        // },
+        // {
+        //     $lookup: {
+        //         from: "dns",
+        //         localField: "uid",
+        //         foreignField: "uid",
+        //         as: "dns"
+        //     }
+        // },
+        {
+            $project: {
+                _id: 0,
+                ts: "$ts",
+                uid: "$uid",
+                orig_h: "$orig_h",
+                orig_p: "$orig_p",
+                resp_h: "$resp_h",
+                resp_p: "$resp_p",
+                // conns: "$conns",
+                // dns: "$dns",
+                label: {
+                    $cond: {
+                        if: {
+                            $gte: ["$label", "1.0"]
+                        },
+                        then: "malicious",
+                        else: "normal"
+                    }
+                }
+            }
+        },
+        { $sort : { _id : -1 } },
+        { $limit : 10 }
+    ];
+    if(req.params.detail == "true"){
+        // Find some documents
+        Classification.aggregate(queryTopMalicious,
+            function (err, data) {
+                // console.log(data)
+                // Mongo command to fetch all data from collection.
+                if (err) {
+                    response = {
+                        error: true,
+                        message: "Error fetching data"
+                    };
+                } else {
+                    response = {
+                        error: false,
+                        message: "Malicious classification logs retrieved successfully page ",
+                        data: data
+                    };
+                }
+                res.json(response);
+            }
+        );
+    }
+    if(req.params.detail == "false"){
+        // Find some documents
+        Classification.aggregate(queryDetailMalicious,
+            function (err, data) {
+                // console.log(data)
+                // Mongo command to fetch all data from collection.
+                if (err) {
+                    response = {
+                        error: true,
+                        message: "Error fetching data"
+                    };
+                } else {
+                    response = {
+                        error: false,
+                        message: "Malicious classification logs retrieved successfully page ",
+                        data: data
+                    };
+                }
+                res.json(response);
+            }
+        );
+    }
+    
 };
 //
 /*start top query*/
@@ -196,8 +272,8 @@ exports.delete = function (req, res) {
 
 // get all malicious count of connlog
 exports.getMaliciousCount = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     var q = Classification.find({
         label: "1.0",
@@ -249,8 +325,8 @@ exports.totalMalicious = function (req, res) {
 
 // get all normal count of connlog
 exports.getNormalCount = function (req, res) {
-    var startDate = moment(req.params.start).utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
-    var endDate = moment(req.params.end + "T23:59:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
+    var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
+    var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
     var q = Classification.find({
         label: "0.0",

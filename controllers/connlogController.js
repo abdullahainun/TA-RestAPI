@@ -84,7 +84,9 @@ exports.getProtokol = function (req, res) {
                 name: "$_id",
                 sum: 1
             }
-        }
+        },
+        { $sort : { value : -1 } },
+        { $limit : 10 }
     ], function (err, result) {
         if (err) {
             res.json({
@@ -105,9 +107,35 @@ exports.getProtokol = function (req, res) {
 exports.getTopOrigin = function (req, res) {
     var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-
-    Connlog.aggregate([{
-            $match: {
+    var detail = req.params.detail;
+    
+    queryDetailOrig = [{
+        $match: {
+                ts: {
+                        "$gte": new Date(startDate),
+                        "$lte": new Date(endDate)
+                    }
+                }
+            }, {
+                "$group": {
+                    _id: "$id_orig_h",
+                    value: {
+                        $sum: 1
+                    }
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    value: "$value",
+                    name: "$_id",
+                    sum: 1
+                }
+            },
+            { $sort : { value : -1 } }    
+    ];
+    querytopOrig = [{
+        $match: {
                 ts: {
                     "$gte": new Date(startDate),
                     "$lte": new Date(endDate)
@@ -128,20 +156,41 @@ exports.getTopOrigin = function (req, res) {
                 name: "$_id",
                 sum: 1
             }
-        }
-    ], function (err, result) {
-        if (err) {
+        },
+        { $sort : { value : -1 } },
+        { $limit : 10 }        
+    ];    
+    if(req.params.detail == "true"){
+        Connlog.aggregate(querytopOrig, function(err, result){
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err,
+                });
+            }
             res.json({
-                error: true,
-                message: err,
-            });
-        }
-        res.json({
-            error: false,
-            message: "top origin of Conn logs retrieved successfully " + startDate + " until " + endDate,
-            data: result
+                error: false,
+                message: "top protokol of Conn logs from " + startDate + " until " + endDate + "retrieved successfully",
+                data: result
+            })
         });
-    });
+    }
+    if(req.params.detail == "false"){
+        Connlog.aggregate(queryDetailOrig, function(err, result){
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err,
+                });
+            }
+            res.json({
+                error: false,
+                message: "top protokol of Conn logs from " + startDate + " until " + endDate + "retrieved successfully",
+                data: result
+            })
+        });
+    }
+    
 };
 
 /*end top originator*/
@@ -150,9 +199,8 @@ exports.getTopOrigin = function (req, res) {
 exports.getTopResp = function (req, res) {
     var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-
-    Connlog.aggregate([{
-            $match: {
+    var queryDetailResp = [{
+        $match: {
                 ts: {
                     "$gte": new Date(startDate),
                     "$lte": new Date(endDate)
@@ -173,20 +221,66 @@ exports.getTopResp = function (req, res) {
                 name: "$_id",
                 sum: 1
             }
-        }
-    ], function (err, result) {
-        if (err) {
+        },
+        { $sort : { value : -1 } },
+    ];
+    var queryTopDetail = [{
+        $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
+            "$group": {
+                _id: "$id_resp_h",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        },
+        { $sort : { value : -1 } },
+        { $limit : 10 }
+    ]
+
+    if(req.params.detail == "true"){
+        Connlog.aggregate(queryTopDetail, function(err, result){
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err,
+                });
+            }
             res.json({
-                error: true,
-                message: err,
-            });
-        }
-        res.json({
-            error: false,
-            message: "top responder of Conn logs retrieved successfully",
-            data: result
+                error: false,
+                message: "top protokol of Conn logs from " + startDate + " until " + endDate + "retrieved successfully",
+                data: result
+            })
         });
-    });
+    }
+    if(req.params.detail == "false"){
+        Connlog.aggregate(queryDetailResp, function(err, result){
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err,
+                });
+            }
+            res.json({
+                error: false,
+                message: "top protokol of Conn logs from " + startDate + " until " + endDate + "retrieved successfully",
+                data: result
+            })
+        });
+    }    
 };
 /*end top resp*/
 

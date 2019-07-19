@@ -29,9 +29,9 @@ router.route('/dnslogorigh/:start/:end/:jam')
     .get(dnslogController.getTopOrigin);
 router.route('/dnslogresph/:start/:end/:jam')
     .get(dnslogController.getTopResp);
-router.route('/dnslogqueries/:start/:end/:jam')
+router.route('/dnslogqueries/:start/:end/:jam/:detail')
     .get(dnslogController.getQuery);
-router.route('/dnslogrcodes/:start/:end/:jam')
+router.route('/dnslogrcodes/:start/:end/:jam/:detail')
     .get(dnslogController.getRcode);
 
 // dns log kurang modifikasi select by date range
@@ -43,9 +43,9 @@ router.route('/connlogallcount/:start/:end/:jam')
     .get(connlogController.getAllCount);
 router.route('/connlogprotokol/:start/:end/:jam')
     .get(connlogController.getProtokol);
-router.route('/connlogtoporigin/:start/:end/:jam')
+router.route('/connlogtoporigin/:start/:end/:jam/:detail')
     .get(connlogController.getTopOrigin);
-router.route('/connlogtopresp/:start/:end/:jam')
+router.route('/connlogtopresp/:start/:end/:jam/:detail')
     .get(connlogController.getTopResp);
 router.route('/connlogtotal/:start/:end/:jam')
     .get(connlogController.gettotal);
@@ -56,13 +56,13 @@ router.route('/connlog/:uid')
 /** classification  **/
 router.route('/classifications')
     .get(classificationController.index);
-router.route('/klasifikasimalicious/:start/:end/:jam')
+router.route('/klasifikasimalicious/:start/:end/:jam/:detail')
     .get(classificationController.malicious);
-router.route('/klasifikasinormal/:start/:end/:jam')
+router.route('/klasifikasinormal/:start/:end/:jam/:detail')
     .get(classificationController.normal);
-router.route('/classification/getmaliciouscount/:start/:end')
+router.route('/classification/getmaliciouscount/:start/:end/:jam')
     .get(classificationController.getMaliciousCount);
-router.route('/classification/getnormalcount/:start/:end')
+router.route('/classification/getnormalcount/:start/:end/:jam')
     .get(classificationController.getNormalCount);
 router.route('/classification/totalmalicious')
     .get(classificationController.totalMalicious);

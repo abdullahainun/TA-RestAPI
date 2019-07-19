@@ -100,7 +100,10 @@ exports.getTopResp = function (req, res) {
                 name: "$_id",
                 sum: 1
             }
-        }
+        },
+        { $sort : { value : -1 } },
+        { $limit : 10 }
+
     ], function (err, result) {
         if (err) {
             res.json({
@@ -121,8 +124,34 @@ exports.getTopResp = function (req, res) {
 exports.getQuery = function (req, res) {
     var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
-
-    Dnslog.aggregate([{
+    console.log(startDate)
+    console.log(endDate)
+    var queryDetail = [{
+        $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
+            "$group": {
+                _id: "$query",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        },
+    ];
+    var queryTop = [
+        {
             $match: {
                 ts: {
                     "$gte": new Date(startDate),
@@ -144,20 +173,70 @@ exports.getQuery = function (req, res) {
                 name: "$_id",
                 sum: 1
             }
-        }
-    ], function (err, result) {
-        if (err) {
-            res.json({
-                error: true,
-                message: err,
-            });
-        }
-        res.json({
-            error: false,
-            message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
-            data: result
-        });
-    });
+        },
+        { $sort : { value : -1 } },
+        { $limit : 10 }
+    ];
+    // var aggregation = Dnslog.aggregate(queryTop, function(err, result){
+    //         if (err) {
+    //             res.json({
+    //                 error: true,
+    //                 message: err,
+    //             });
+    //         }
+    //         res.json({
+    //             error: false,
+    //             message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
+    //             data: result
+    //         }); 
+    // });
+    // aggregation.options = { allowDiskUse: true }; 
+    // aggregation.exec(function() {});
+
+    // Dnslog.aggregate(queryTop, function(err, result){
+    //     if (err) {
+    //         res.json({
+    //             error: true,
+    //             message: err,
+    //         });
+    //     }
+    //     res.json({
+    //         error: false,
+    //         message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
+    //         data: result
+    //     })
+    // });
+
+    // if(req.params.detail == "true"){
+    //     Dnslog.aggregate(queryTop, function(err, result){
+    //         if (err) {
+    //             res.json({
+    //                 error: true,
+    //                 message: err,
+    //             });
+    //         }
+    //         res.json({
+    //             error: false,
+    //             message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
+    //             data: result
+    //         })
+    //     });
+    // }
+    // if(req.params.detail == "false"){
+    //     Dnslog.aggregate(queryDetail, function(err, result){
+    //         if (err) {
+    //             res.json({
+    //                 error: true,
+    //                 message: err,
+    //             });
+    //         }
+    //         res.json({
+    //             error: false,
+    //             message: "Top Query retrieved successfully from " + startDate + " until " + endDate,
+    //             data: result
+    //         })
+    //     });
+    // }
 };
 
 /*start top query*/
@@ -210,8 +289,8 @@ exports.getRcode = function (req, res) {
     var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
-    Dnslog.aggregate([{
-            $match: {
+    var queryDetailRcode = [{
+        $match: {
                 ts: {
                     "$gte": new Date(startDate),
                     "$lte": new Date(endDate)
@@ -232,20 +311,65 @@ exports.getRcode = function (req, res) {
                 name: "$_id",
                 sum: 1
             }
-        }
-    ], function (err, result) {
-        if (err) {
+        },
+        { $sort : { value : -1 } },
+    ];
+    var queryTopRcode = [{
+        $match: {
+                ts: {
+                    "$gte": new Date(startDate),
+                    "$lte": new Date(endDate)
+                }
+            }
+        }, {
+            "$group": {
+                _id: "$rcode_name",
+                value: {
+                    $sum: 1
+                }
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                value: "$value",
+                name: "$_id",
+                sum: 1
+            }
+        },
+        { $sort : { value : -1 } },
+        { $limit : 10 }
+    ];
+    if(req.params.detail == "true"){
+        Dnslog.aggregate(queryDetailRcode, function(err, result){
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err,
+                });
+            }
             res.json({
                 error: false,
-                message: err,
-            });
-        }
-        res.json({
-            error: false,
-            message: "top rcode_name of dns traffic retrieved successfully from " + startDate + "until" + endDate,
-            data: result
+                message: "details of Rcode logs from " + startDate + " until " + endDate + "retrieved successfully",
+                data: result
+            })
         });
-    });
+    }
+    if(req.params.detail == "false"){
+        Dnslog.aggregate(queryTopRcode, function(err, result){
+            if (err) {
+                res.json({
+                    error: true,
+                    message: err,
+                });
+            }
+            res.json({
+                error: false,
+                message: "top protokol of Rcode logs from " + startDate + " until " + endDate + "retrieved successfully",
+                data: result
+            })
+        });
+    }    
 };
 
 /*end top rcode*/
@@ -271,12 +395,30 @@ exports.bydaterange = function (req, res) {
     var startDate = moment(req.params.start + "T"+req.params.jam.substring(0,2)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.startTime = 2016-09-25 00:00:00
     var endDate = moment(req.params.end + "T"+req.params.jam.substring(2,4)+":00:00").utcOffset('+0700').format("YYYY-MM-DDTHH:mm:ss.SSSZ"); //req.params.endTime = 2016-09-25 01:00:00
 
-    Dnslog.find({
-        ts: {
-            '$gte': startDate,
-            '$lte': endDate
+    Dnslog.aggregate([{
+        $match: {
+            ts: {
+                "$gte": new Date(startDate),
+                "$lte": new Date(endDate)
+            }
         }
-    }, function (err, data) {
+    },
+    {
+        $project: {
+            _id: 0,
+            ts: "$ts",
+            uid: "$uid",
+            id_orig_h: "$id_orig_h",
+            id_orig_p: "$id_orig_p",
+            id_resp_h: "$id_resp_h",
+            id_resp_p: "$id_resp_p",
+            proto: "$proto",
+            query: "$query",
+        }
+    },
+    { $sort : { _id : -1 } },
+    { $limit : 10 }
+], function (err, data) {
         // Mongo command to fetch all data from collection.
         if (err) {
             response = {

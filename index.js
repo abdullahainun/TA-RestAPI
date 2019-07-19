@@ -1,3 +1,5 @@
+
+// require('appmetrics-dash').monitor();
 // Import express
 let express = require('express');
 // Import Body parser
